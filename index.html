@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+`<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omani Mental Health Voice Therapist - AI Assistant</title>
+    <style>
+        :root {
+            --omani-red: #C8102E;
+            --omani-green: #009639;
+            --omani-gold: #FFD700;
+            --therapeutic-blue: #4A90E2;
+            --calm-blue: #E3F2FD;
+            --warning-yellow: #FFF3CD;
+            --danger-red: #F8D7DA;
+            --success-green: #D4EDDA;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--therapeutic-blue) 0%, var(--omani-green) 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            line-height: 1.6;
+            direction: ltr;
+        }
+
+        .main-container {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            max-width: 900px;
+            width: 95%;
+            position: relative;
+            direction: ltr;
+        }
+
+        .header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: var(--omani-red);
+            margin-bottom: 15px;
+            font-size: 2.2em;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .islamic-blessing {
+            background: var(--calm-blue);
+            border: 2px solid var(--omani-green);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+            color: var(--omani-green);
+            font-weight: 600;
+            font-size: 1.1em;
+            font-family: 'Arabic UI Text', 'Segoe UI', 'Amiri', 'Scheherazade', 'Times New Roman', serif;
+            direction: rtl;
+            text-align: center;
+            unicode-bidi: embed;
+        }
+
+        .session-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .session-info, .risk-status {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: left;
+            direction: ltr;
+        }
+
+        .session-info {
+            border-left: 4px solid var(--therapeutic-blue);
+        }
+
+        .risk-status {
+            border-left: 4px solid var(--omani-green);
+        }
+
+        .risk-indicator {
+            display: none;
+            background: var(--danger-red);
+            color: #721c24;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-weight: bold;
+            animation: pulse-warning 2s infinite;
+            text-align: center;
+            direction: ltr;
+        }
+
+        @keyframes pulse-warning {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .risk-low { border-left-color: var(--omani-green) !important; }
+        .risk-medium { border-left-color: var(--warning-yellow) !important; background: #fffbf0 !important; }
+        .risk-high { border-left-color: #ffc107 !important; background: #fff8e1 !important; }
+        .risk-critical { border-left-color: var(--omani-red) !important; background: var(--danger-red) !important; }
+
+        .api-setup {
+            background: var(--warning-yellow);
+            border: 2px solid var(--omani-gold);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+            direction: ltr;
+        }
+
+        .api-setup h3 {
+            color: #856404;
+            margin: 0 0 15px 0;
+            font-size: 1.2em;
+        }
+
+        .api-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .api-input-group {
+            text-align: left;
+            direction: ltr;
+        }
+
+        .api-input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #856404;
+        }
+
+        .api-setup input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            direction: ltr;
+        }
+
+        .api-setup input:focus {
+            outline: none;
+            border-color: var(--therapeutic-blue);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .api-setup small {
+            color: #856404;
+            display: block;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .voice-interface {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .microphone {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: var(--omani-red);
+            border: 4px solid white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            transition: all 0.4s ease;
+            font-size: 50px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(200, 16, 46, 0.3);
+        }
+
+        .microphone:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(200, 16, 46, 0.4);
+        }
+
+        .microphone.listening {
+            background: var(--omani-green);
+            animation: pulse-listening 1.5s infinite;
+            box-shadow: 0 10px 30px rgba(0, 150, 57, 0.4);
+        }
+
+        .microphone.processing {
+            background: var(--omani-gold);
+            animation: pulse-processing 1s infinite;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+        }
+
+        @keyframes pulse-listening {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes pulse-processing {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.05) rotate(180deg); }
+            100% { transform: scale(1) rotate(360deg); }
+        }
+
+        .status {
+            margin: 20px 0;
+            font-size: 1.3em;
+            color: #333;
+            min-height: 35px;
+            font-weight: 500;
+            text-align: center;
+            direction: ltr;
+        }
+
+        .conversation-area {
+            margin: 30px 0;
+        }
+
+        .transcript, .response {
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            min-height: 70px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .transcript {
+            background: var(--calm-blue);
+            border-left: 5px solid var(--therapeutic-blue);
+            text-align: left;
+            direction: ltr;
+        }
+
+        .response {
+            background: var(--success-green);
+            border-left: 5px solid var(--omani-green);
+            text-align: left;
+            direction: ltr;
+        }
+
+        .transcript h3, .response h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 1.2em;
+            font-weight: 600;
+            text-align: left;
+            direction: ltr;
+        }
+
+        .transcript p, .response p {
+            margin: 0;
+            color: #555;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        /* Arabic content styling */
+        .arabic-content {
+            font-family: 'Arabic UI Text', 'Segoe UI', 'Amiri', 'Scheherazade', 'Noto Sans Arabic', 'Times New Roman', serif !important;
+            direction: rtl !important;
+            text-align: right !important;
+            unicode-bidi: embed;
+            line-height: 1.8;
+            font-size: 1.15em;
+        }
+
+        /* Override for Arabic text in conversation */
+        .transcript .arabic-content,
+        .response .arabic-content {
+            direction: rtl !important;
+            text-align: right !important;
+            padding: 5px 0;
+            word-spacing: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .emergency-contacts {
+            background: var(--danger-red);
+            border: 2px solid #dc3545;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+            direction: ltr;
+            display: none;
+        }
+
+        .emergency-contacts h3 {
+            color: #721c24;
+            margin: 0 0 15px 0;
+        }
+
+        .emergency-contacts .contact {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            color: #333;
+        }
+
+        .cultural-elements {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            text-align: center;
+        }
+
+        .cultural-icon {
+            font-size: 2em;
+            margin: 10px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .cultural-icon:hover {
+            opacity: 1;
+        }
+
+        .error {
+            color: #721c24;
+            background: var(--danger-red);
+            border: 2px solid #f5c6cb;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: left;
+            direction: ltr;
+            font-weight: 500;
+        }
+
+        .privacy-notice {
+            background: #e3f2fd;
+            border: 2px solid var(--therapeutic-blue);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 0.9em;
+            color: #1565c0;
+            text-align: left;
+            direction: ltr;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            color: #666;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .footer .arabic-footer {
+            font-family: 'Arabic UI Text', 'Segoe UI', serif;
+            direction: rtl;
+            display: inline;
+        }
+
+        @media (max-width: 768px) {
+            .session-dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .api-inputs {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .microphone {
+                width: 120px;
+                height: 120px;
+                font-size: 40px;
+            }
+
+            .arabic-content {
+                font-size: 1.1em;
+            }
+        }
+
+        /* Loading animation for processing */
+        .processing-indicator {
+            display: inline-block;
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        /* Ensure proper text rendering for mixed content */
+        .mixed-content {
+            unicode-bidi: bidi-override;
+        }
+
+        /* Better Arabic font rendering */
+        .arabic-content * {
+            font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
+            text-rendering: optimizeLegibility;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🕌 Omani Mental Health Voice Therapist</h1>
+            <div class="subtitle">AI-Powered Therapeutic Support in Omani Arabic Dialect</div>
+        </div>
+
+        <!-- Islamic Blessing -->
+        <div class="islamic-blessing arabic-content">
+            بسم الله الرحمن الرحيم • الحمد لله رب العالمين
+        </div>
+
+        <!-- Session Dashboard -->
+        <div class="session-dashboard">
+            <div class="session-info" id="sessionInfo">
+                <h4>📊 Session Information</h4>
+                <div id="sessionDetails">Loading...</div>
+            </div>
+            <div class="risk-status" id="riskStatus">
+                <h4>🛡️ Safety Assessment</h4>
+                <div>Risk Level: <span id="riskLevel">Low</span></div>
+                <div>Emotional State: <span id="emotionalState">Neutral</span></div>
+            </div>
+        </div>
+
+        <!-- Risk Indicator (Hidden by default) -->
+        <div class="risk-indicator" id="riskIndicator">
+            ⚠️ Risk Detected - Immediate Attention Required
+        </div>
+
+        <!-- API Setup -->
+        <div class="api-setup">
+            <h3>🔑 AI Configuration</h3>
+            <div class="api-inputs">
+                <div class="api-input-group">
+                    <label for="apiKey">OpenAI API Key (GPT-4o):</label>
+                    <input type="password" id="apiKey" placeholder="Optional - for advanced AI responses">
+                </div>
+                <div class="api-input-group">
+                    <label for="claudeKey">Claude Opus 4 API Key:</label>
+                    <input type="password" id="claudeKey" placeholder="Optional - backup system">
+                </div>
+            </div>
+            <small>
+                🔒 API keys are stored locally only. Leave empty to use demonstration responses. 
+                The system provides culturally sensitive therapeutic support in Omani Arabic dialect with Islamic values integration.
+            </small>
+        </div>
+
+        <!-- Voice Interface -->
+        <div class="voice-interface">
+            <button class="microphone" id="micButton">
+                🎤
+            </button>
+            <div class="status" id="status">Click the microphone to speak with the mental health therapist</div>
+        </div>
+
+        <!-- Cultural Elements -->
+        <div class="cultural-elements">
+            <div class="cultural-icon" title="Omani Heritage">🕌</div>
+            <div class="cultural-icon" title="Islamic Values">☪️</div>
+            <div class="cultural-icon" title="Family Support">👨‍👩‍👧‍👦</div>
+            <div class="cultural-icon" title="Natural Beauty">🏔️</div>
+            <div class="cultural-icon" title="Cultural Traditions">🎭</div>
+        </div>
+
+        <!-- Conversation Area -->
+        <div class="conversation-area">
+            <div class="transcript" id="transcriptSection" style="display: none;">
+                <h3>💭 What You Said:</h3>
+                <p id="transcript" class="arabic-content">Listening...</p>
+            </div>
+
+            <div class="response" id="responseSection" style="display: none;">
+                <h3>🗣️ Therapist Response (Omani Arabic):</h3>
+                <p id="response" class="arabic-content">Processing your input...</p>
+            </div>
+        </div>
+
+        <!-- Emergency Contacts -->
+        <div class="emergency-contacts" id="emergencyContact">
+            <h3>🚨 Emergency Contacts</h3>
+            <div class="contact">
+                <strong>General Emergency:</strong> 999
+            </div>
+            <div class="contact">
+                <strong>Mental Health Helpline:</strong> (Example) 1234567
+            </div>
+            <div class="contact">
+                <strong>Psychiatric Hospital:</strong> (Example) 2345678
+            </div>
+            <div class="contact">
+                <strong>Family Support Services:</strong> (Example) 3456789
+            </div>
+        </div>
+
+        <!-- Error Display -->
+        <div id="error" class="error" style="display: none;"></div>
+
+        <!-- Privacy Notice -->
+        <div class="privacy-notice">
+            🔐 <strong>Privacy Notice:</strong> This system maintains conversation confidentiality according to HIPAA standards. 
+            All data is protected and stored only for therapeutic necessity. Professional supervision is recommended for comprehensive mental health care.
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div>🇴🇲 Made with care for the Omani community • <span class="arabic-footer">صُنع بحب لخدمة المجتمع العماني</span></div>
+            <div style="margin-top: 10px; font-size: 0.8em;">
+                Version 1.0 - Omani Dialect Voice Therapy System • <span class="arabic-footer">نظام العلاج النفسي الصوتي باللهجة العمانية</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html> 
